@@ -27,7 +27,7 @@ $$
 \end{gather*}
 $$
 
-donde los valores de X_\mathrm{T} y $y_T$ corresponden a coordenadas del TCP.
+donde los valores de $X_\mathrm{T}$ y $Y_\mathrm{T}$ corresponden a coordenadas del TCP.
 
 Se realiza un desacople de la muñeca de la ultima articulación por lo que la posición de nuestro TCP se mueve la distancia correspondiente a $l_4$ en la dirección del vector "$a$"(approach en la nomenclatura NOA), por lo que la posición de la muñeca corresponde a:
 
@@ -50,37 +50,24 @@ $$
 
 Donde los valores de $a_X$, $a_Y$ and $a_Z$ corresponden a los componentes cartesianos del vector "$a$". A partir de esto es posible determinar los componentes de la matriz de rotación de nuestro TCP. De esta forma es posible simplificar este problema de cinematica inversa al de un mecanismo 2R, donde se proponen dos soluciones: Codo arriba y Codo abajo:
 
-<div align="center">
-
-|     Joint      |             Elbow up                |               Elbow down              |
-| :------------: | :---------------------------------: | :-----------------------------------: |
-| $\mathbf{q_2}$ | $\frac{\pi}{2}-\beta-\alpha-\gamma$ | $\frac{\pi}{2}-(\gamma-\alpha+\beta)$ |
-| $\mathbf{q_3}$ |         $\pi-\psi-\phi$             |          $-\pi+(\phi-\psi)$           |
-
-</div>
-
 
 $$
 \begin{gather*}
-    r = \sqrt{X_W^2+Y_W^2}\\
-    h = z_w-l_1\\
-    \\
+    r = \sqrt{X_W^2+Y_W^2} \ \ \ \ \ \ h = z_w-l_1\\
     c = \sqrt{r^2+h^2}\\
     \\
-    \beta = \mathrm{arctan2}(l_m,l_2)\\
-    \psi = \frac{\pi}{2}-\beta\\
+    \beta = \mathrm{arctan2}(l_m,l_2) \ \ \ \ \ \ \psi = \frac{\pi}{2}-\beta\\
     l_r = \sqrt{l_m^2+l_2^2}\\
     \\
-    \phi = \mathrm{arccos}(\frac{c^2-l_3^2-l_r^2}{-2l_rl_3})\\
+    \phi = \mathrm{arccos}(\frac{c^2-l_3^2-l_r^2}{-2l_rl_3}) \ \ \ \ \ \ \alpha =  \arccos{\frac{l_3^2-l_r^2-c^2}{-2l_rc}}
     \\
-    \gamma = \arctan2{(h,r)}\\
-    \alpha =  \arccos{\frac{l_3^2-l_r^2-c^2}{-2l_rc}}
+    \gamma = \arctan2{(h,r)}
 \end{gather*}
 $$
 
 Se utilizan las siguientes ecuaciones para definir las soluciones de Codo arriba y Codo abajo:
 
-CODO ARRIBA:
+#### CODO ARRIBA:
 
 $$
 \begin{gather*} 
@@ -89,7 +76,7 @@ $$
 \end{gather*}
 $$
 
-CODO ABAJO:
+#### CODO ABAJO:
 
 $$
 \begin{gather*} 
