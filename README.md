@@ -52,19 +52,38 @@ Donde los valores de $a_X$, $a_Y$ and $a_Z$ corresponden a los componentes carte
 
 $$
 \begin{gather*}
-    r = \sqrt{x_w^2+y_w^2}\\
-    h = z_w-L_1\\
+    r = \sqrt{x_W^2+y_W^2}\\
+    h = z_w-l_1\\
     \\
     c = \sqrt{r^2+h^2}\\
     \\
-    \beta = \arctan2{(L_m,L_2)}\\
+    \beta = \mathrm{arctan2}(l_m,l_2)\\
     \psi = \frac{\pi}{2}-\beta\\
-    L_r = \sqrt{L_m^2+L_2^2}\\
+    l_r = \sqrt{l_m^2+l_2^2}\\
     \\
-    \phi = \arccos{\frac{c^2-L_3^2-L_r^2}{-2L_rL_3}}\\
+    \phi = \mathrm{arccos}(\frac{c^2-l_3^2-l_r^2}{-2l_rl_3})\\
     \\
     \gamma = \arctan2{(h,r)}\\
-    \alpha =  \arccos{\frac{L_3^2-L_r^2-c^2}{-2L_rc}}
+    \alpha =  \arccos{\frac{l_3^2-l_r^2-c^2}{-2l_rc}}
+\end{gather*}
+$$
+
+Se utilizan las siguientes ecuaciones para definir las soluciones de Codo arriba y Codo abajo:
+
+CODO ARRIBA:
+$$
+\begin{gather*} 
+q_2 = \frac{\pi}{2}-\beta-\alpha-\gamma \\
+q_3 = \pi-\psi-\phi
+\end{gather*}
+$$
+
+CODO ABAJO:
+
+$$
+\begin{gather*} 
+q_2 = \frac{\pi}{2}-(\gamma-\alpha+\beta)\\
+q_3 = -\pi+(\phi-\psi)
 \end{gather*}
 $$
 
