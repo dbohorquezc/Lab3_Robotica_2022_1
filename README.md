@@ -17,4 +17,8 @@ Robótica</p1>
 
 <p align="center"; style="font-size:50px; text-align:center; line-height : 30px; margin-top : 0; "> <br>13 de mayo de 2022</p>
 
+## Cinemática Inversa
+
+
+
 ## Metodología
