@@ -50,9 +50,19 @@ $$
 
 Donde los valores de $a_X$, $a_Y$ and $a_Z$ corresponden a los componentes cartesianos del vector "$a$". A partir de esto es posible determinar los componentes de la matriz de rotación de nuestro TCP. De esta forma es posible simplificar este problema de cinematica inversa al de un mecanismo 2R, donde se proponen dos soluciones: Codo arriba y Codo abajo:
 
+<div align="center">
+
+|     Joint      |             Elbow up                |               Elbow down              |
+| :------------: | :---------------------------------: | :-----------------------------------: |
+| $\mathbf{q_2}$ | $\frac{\pi}{2}-\beta-\alpha-\gamma$ | $\frac{\pi}{2}-(\gamma-\alpha+\beta)$ |
+| $\mathbf{q_3}$ |         $\pi-\psi-\phi$             |          $-\pi+(\phi-\psi)$           |
+
+</div>
+
+
 $$
 \begin{gather*}
-    r = \sqrt{x_W^2+y_W^2}\\
+    r = \sqrt{X_W^2+Y_W^2}\\
     h = z_w-l_1\\
     \\
     c = \sqrt{r^2+h^2}\\
@@ -71,10 +81,11 @@ $$
 Se utilizan las siguientes ecuaciones para definir las soluciones de Codo arriba y Codo abajo:
 
 CODO ARRIBA:
+
 $$
 \begin{gather*} 
-q_2 = \frac{\pi}{2}-\beta-\alpha-\gamma \\
-q_3 = \pi-\psi-\phi
+  q_2 = \frac{\pi}{2}-\beta-\alpha-\gamma \\
+  q_3 = \pi-\psi-\phi
 \end{gather*}
 $$
 
@@ -82,9 +93,20 @@ CODO ABAJO:
 
 $$
 \begin{gather*} 
-q_2 = \frac{\pi}{2}-(\gamma-\alpha+\beta)\\
-q_3 = -\pi+(\phi-\psi)
+  q_2 = \frac{\pi}{2}-(\gamma-\alpha+\beta)\\
+  q_3 = -\pi+(\phi-\psi)
 \end{gather*}
 $$
+
+Una vez definidos los ángulos se vuelve a acoplar la muñeca y se define su angulo como:
+
+$$
+\begin{gather*}
+    \theta_a=\mathrm{\arctan2}\left(\sqrt{X_a^2+Y_a^2},Z_a\right)\\
+    q_4=\theta_a-q_2-q_3-\frac{\pi}{2}
+\end{gather*}
+$$
+
+Donde $\theta_a$ corresponde al angulo del vector "$a$" respecto al eje $Z_0$.
 
 ## Metodología
