@@ -98,10 +98,10 @@ $$
 
 Donde $\theta_a$ corresponde al angulo del vector "$a$" respecto al eje $Z_0$.
 
-### ROS - Aplicación de Pick and place
+### ROS - Matlab: Aplicación de Pick and place
 Para esta parte del laboratorio se hizo uso de la conexión de Matlab con ROS y su capacidad de permitir acceder y llamar los servicios que presente con respecto a una aplicación determinada por medio de código dentro del software. Es necesario mencionar que se tiene que relaizar un proceso previo el cual antecede al trabajo dentro Matlab, tal y como se menciono en los anteriores laboratorios se dan permisos de administrador al puerto donde se inserta la FTDI, se inicia el nodo maestro y se utiliza el launch que permite mover los motores. Se sigue el mismo proceso expresado en el Lab 1 donde se crea un nodo de MAtlab con el nodo maestro, y un cliente que permita ingresar a los servicios del Dynamixel Command por medio de un mensaje que indicará el movimiento de los motores a partir del siguiente código:
 
-```
+```Matlab
 %%
 clc
 clear
@@ -110,35 +110,12 @@ rosinit;
 %%
 motorSvcClient = rossvcclient('/dynamixel_workbench/dynamixel_command');
 motorCommandMsg= rosmessage(motorSvcClient);
-```
-Como primer análisis es necesario encontrar una forma en el que se realice un tipo de interpolación entre dos puntos que se conozca la rotación y traslación del efector final tal y como lo pide la cinemática inversa. Para esto se investigó una función del Toolbox de Peter Corke que permita realizar este proceso y tener una trayectoria más fluida y no solo dos puntos en el espacio, "ctraj" es la encargada de realizar este proceso, tiene como parámetros el ingreso de una matriz de transformación homogenea inicial, una de objetivo y por ultimo el numero de puntos que se quieren en la trayectoria, entre mas se tengan se consume más tiempo de procesamiento. Ahora el siguiente problema es la obtención de dichas matrices, para esto se hizo uso del modelo utilizado en el Lab2 donde se puede ver de manera gráfica e interactiva la posicion dl robot y el marco de referencia del eslabón con respecto a la base.
-<p align="center">
-  <img align="center"; width="500"  src="Fig/ModeloTeach.png">
-</p>
-Para la obtención de la información del tipo de rotación  que presenta el marco de referencia de la herramienta con respecto a la base, se analiza la magnitud que debe tener dicha rotación de manera empírica y observación de los diferentes marcos, en algunos casos solo se realiza una modificación de la traslación, de esta manera se generan las suguientes matrices de transformacion homogenea.
 
 ```
-%Matriz de Home
-MTHinit=[1 0 0 0;0 1 0 0;0 0 1 44.9;0 0 0 1];
-%Matriz intermedia entre el punto encima del poste y el Home
-MTHinter1a=[0.7071 0 0.7071 14.483;0 1 0 0;-0.7071 0 0.7071 40.466;0 0 0 1];
-%Matriz que representa la poscición a 10 cm encima del poste
-MTHinter=[-1 0 0 15;0 1 0 0;0 0 -1 10;0 0 0 1];
-%MTH de 8 cm encima del poste
-MTHinter2=[-1 0 0 15;0 1 0 0;0 0 -1 8;0 0 0 1];
-%MTH de la rotación a la izquierda del efector y posición de 10 cm encima del primer cilindro
-MTHrotz1=trotz(pi/2)*MTHinter;MTHrotz1(1,4)=0;MTHrotz1(2,4)=15;
-%MTH del acercamiento al primer cilindro
-MTHFinal1=MTHrotz1;MTHFinal1(3,4)=4;
-%MTH de la rotación a la derecha del efector y posición de 10 cm encima del segunda cilindro
-MTHrotz2=trotz(-pi/2)*MTHinter;MTHrotz2(1,4)=0;MTHrotz2(2,4)=-15;
-%MTH del acercamiento al segunda cilindro
-MTHFinal2=MTHrotz2;MTHFinal2(3,4)=4;
-```
-Al tener estas matrices se puede hacer una rutina que permita ubicar los dos cilindros en el poste requerido, para evitar que se tenga una gran cantidad de lineas de codigo, se realizó una función que permitiera realizar la interpolación, la cinemática inversa y el llamado del servicio para enviar los ángulos requeridos en cada articulación:
-
+Como primer análisis es necesario encontrar una forma en el que se realice un tipo de interpolación entre dos puntos que se conozca la rotación y traslación del efector final tal y como lo pide la cinemática inversa. Para esto se investigó una función del Toolbox de Peter Corke que permita realizar este proceso y tener una trayectoria más fluida y no solo dos puntos en el espacio, "ctraj" es la encargada de realizar este proceso, tiene como parámetros 
 ```
 function []= Move(MTH1,MTH2,n,motorSvcClient,motorCommandMsg)
+
 TCP1=ctraj(MTH1,MTH2,n);
 
 for i=1:length(TCP1)
@@ -195,9 +172,108 @@ motorCommandMsg.Value=round(mapfun(0,-150,150,0,1023));%bits
 call(motorSvcClient,motorCommandMsg);
 Move(MTHinter2,MTHinter,10,motorSvcClient,motorCommandMsg);
 ```
-Cada uno de los llamados de la función Move indican un movimiento iniciando desde home, y se puede evidenciar que en los puntos donde se ubica el cilindro se agrega un llamado del servicio del motor de la pinza para ejecutar el agarre y como buen practica se agregan más puntos en el movimiento previo a esto para obtener una aproximación más precisa
-### Videos
+Cada uno de los llamados de la función Move indican un movimiento iniciando desde home, y se puede evidenciar que en los puntos donde se ubica el cilindro se agrega un llamado del servicio del motor de la pinza para ejecutar el agarre y como buen practica se agregan más puntos en el movimiento previo a esto para obtener una aproximación más precis
+
+
+
+
+
+### ROS - Python: Aplicación de movimiento en el espacio de la tarea
+
+Para el desarrollo del movimiento aplicado del manipulador en el espacio de la tarea se utilizó el entorno de Python, debido a la facilidad en la detección de las teclas "W", "A", "S" y "D". El script hecho es similar en algunas herramientas al desarrollado en la Practica 2, como lo es el uso de THERMIOS para la detección de teclas.
+
+```Python
+TERMIOS = termios
+def getkey():
+    fd = sys.stdin.fileno()
+    old = termios.tcgetattr(fd)
+    new = termios.tcgetattr(fd)
+    new[3] = new[3] & ~TERMIOS.ICANON & ~TERMIOS.ECHO
+    new[6][TERMIOS.VMIN] = 1
+    new[6][TERMIOS.VTIME] = 0
+    termios.tcsetattr(fd, TERMIOS.TCSANOW, new)
+    c = None
+    try:
+        c = os.read(fd, 1)
+    finally:
+        termios.tcsetattr(fd, TERMIOS.TCSAFLUSH, old)
+    return c
+```
+
+Ahora bien, este script usa la misma función para obtener la cinemática inversa del robot, siempre da una configuración de codo hacia arriba. Además, usamos el tema Joint_State para obtener la posición actual del brazo.
+
+```Python
+def inv_kci(T):
+    l = np.array([14.5, 10.7, 10.7, 9])
+    Tw = T-(l[3]*T[0:4,2]).reshape(4,1)
+    q1 = np.arctan2(Tw[1,3],Tw[0,3])
+    # Solucion 2R
+    h = Tw[2,3] - l[0]
+    r = np.sqrt(Tw[0,3]**2 + Tw[1,3]**2)
+    # Codo abajo
+    the3 = np.arccos((r**2+h**2-l[1]**2-l[2]**2)/(2*l[1]*l[2]))
+    the2 = np.arctan2(h,r) - np.arctan2(l[2]*np.sin(the3),l[1]+l[2]*np.cos(the3))
+    q2d = -(np.pi/2-the2)
+    q3d = the3
+
+    # Codo arriba
+    the2 = np.arctan2(h,r) + np.arctan2(l[2]*np.sin(the3),l[1]+l[2]*np.cos(the3))
+    q2u = -(np.pi/2-the2)
+    q3u = -the3
+
+    # Solucion q4
+    Rp = (rotz(q1).T).dot(T[0:3,0:3])
+    pitch = np.arctan2(Rp[2,0],Rp[0,0])
+    q4d = pitch - q2d - q3d
+    q4u = pitch - q2u - q3u
+    if q4u > (7/6)*np.pi:
+        q4u = q4u-2*np.pi
+    qinv = np.empty((1,4))
+    qinv[:] =np.NaN
+    qinv[0,:] = np.array([q1*180/3.1416,q2u*180/3.1416,q3u*180/3.1416, q4u*180/3.1416])
+    return qinv
+```
+
+
+```Python
+def give_Traj(initia_pos, axe_movement, q1, MLD, MLA, n_points):
+    print(initia_pos)
+    initial_pos_matrix = SE3(initia_pos[0],initia_pos[1], initia_pos[2])*SE3.Rz(initia_pos[3], unit='deg')*SE3.Ry(initia_pos[4] ,unit='deg')
+    if axe_movement == 1:
+        future_pos = SE3(initia_pos[0]+ MLD,initia_pos[1], initia_pos[2])*SE3.Rz(initia_pos[3], unit='deg')*SE3.Ry(initia_pos[4], unit='deg')
+        new_position = initia_pos
+        new_position[0] = initia_pos[0]+ MLD
+    elif axe_movement == 2:
+        future_pos = SE3(initia_pos[0],initia_pos[1]+ MLD, initia_pos[2])*SE3.Rz(initia_pos[3], unit='deg')*SE3.Ry(initia_pos[4], unit='deg')
+        new_position = initia_pos
+        new_position[1] = initia_pos[1]+ MLD
+    elif axe_movement == 3:
+        future_pos = SE3(initia_pos[0],initia_pos[1], initia_pos[2]+MLD)*SE3.Rz(initia_pos[3], unit='deg')*SE3.Ry(initia_pos[4], unit='deg')
+        new_position = initia_pos
+        new_position[2] = initia_pos[2]+ MLD
+    elif axe_movement == 4:
+        future_pos = SE3(initia_pos[0],initia_pos[1], initia_pos[2])*SE3.Rz(initia_pos[3], unit='deg')*SE3.Ry(initia_pos[4]+MLA ,unit='deg')
+        new_position = initia_pos
+        new_position[4] = initia_pos[4]+ MLA
+    print('Posicion Final')
+    print(new_position)
+    Ts = rtb.tools.trajectory.ctraj(initial_pos_matrix, future_pos, n_points)
+    #print(initial_pos_matrix)
+    #print(future_pos)
+    Traj = np.zeros((n_points,4))
+    for i in range(0,n_points):
+        Traj[i,:] = inv_kci(Ts[i].A)
+   
+    return Traj, n_points, new_position
+```
+
+
+## Video en Youtube
+[Robótica: Cinemática Inversa - Phantom X - ROS](https://youtu.be/5wIkKf9X7k8 "Robótica: Cinemática Inversa - Phantom X - ROS")
+
 ## Conclusiones 
 
 * Como se muestra en el video la precisión del robot se puede ver afectada por la vida util de los componentes o por el mal uso como los golpes los cuales pueden afectar la integridad física del dispositivo llevando así a perturbaciones en la trayectoria evidenciadas principalmente en las oscilaciones. 
 * El funcionamiento en conjunto de la función "ctraj" y la cinemática inversa en algunos casos presentaba soluciones que no era adecuadas o posibles para los motores, por ende fue necesario ingresar puntos intermedios manuales que indicaran un inicio de por donde se desea que siga la trayectoria, tal y como lo representa la MTH "MTHinter1a".
+
+
