@@ -17,7 +17,9 @@ Robótica</p1>
 
 <p align="center"; style="font-size:50px; text-align:center; line-height : 30px; margin-top : 0; "> <br>13 de mayo de 2022</p>
 
-## Cinemática Inversa
+## Metodología
+
+### Cinemática Inversa
 
 Se tiene el valor de $q_1$ como:
 
@@ -96,4 +98,24 @@ $$
 
 Donde $\theta_a$ corresponde al angulo del vector "$a$" respecto al eje $Z_0$.
 
-## Metodología
+### ROS - Aplicación de Pick and place
+Para esta parte del laboratorio se hizo uso de la conexión de Matlab con ROS y su capacidad de permitir acceder y llamar los servicios que presente con respecto a una aplicación determinada por medio de código dentro del software. Es necesario mencionar que se tiene que relaizar un proceso previo el cual antecede al trabajo dentro Matlab, tal y como se menciono en los anteriores laboratorios se dan permisos de administrador al puerto donde se inserta la FTDI, se inicia el nodo maestro y se utiliza el launch que permite mover los motores. Se sigue el mismo proceso expresado en el Lab 1 donde se crea un nodo de MAtlab con el nodo maestro, y un cliente que permita ingresar a los servicios del Dynamixel Command por medio de un mensaje que indicará el movimiento de los motores a partir del siguiente código:
+
+```
+%%
+clc
+clear
+rosshutdown
+rosinit;
+%%
+motorSvcClient = rossvcclient('/dynamixel_workbench/dynamixel_command');
+motorCommandMsg= rosmessage(motorSvcClient);
+
+```
+Como primer análisis es necesario encontrar una forma en el que se realice un tipo de interpolación entre dos puntos que se conozca la rotación y traslación del efector final tal y como lo pide la cinemática inversa. Para esto se investigó una función del Toolbox de Peter Corke que permita realizar este proceso y tener una trayectoria más fluida y no solo dos puntos en el espacio, "ctraj" es la encargada de realizar este proceso, tiene como parámetros 
+
+
+### Videos
+## Conclusiones 
+
+* Como se muestra en el video la precisión del robot se puede ver afectada por la vida util de los componentes o por el mal uso como los golpes los cuales pueden afectar la integridad fisica del dispositivo llevando así a perturbaciones en la trayectado evidenciadas principalmente en las oscilaciones. 
