@@ -215,6 +215,11 @@ Move(MTHinter2,MTHinter,10,motorSvcClient,motorCommandMsg);
 ```
 Cada uno de los llamados de la función Move indican un movimiento iniciando desde home, y se puede evidenciar que en los puntos donde se ubica el cilindro se agrega un llamado del servicio del motor de la pinza para ejecutar el agarre y como buen practica se agregan más puntos en el movimiento previo a esto para obtener una aproximación más precis
 
+
+<p align="center">
+  <img src="Fig/Robotpp.jpeg"/>
+</p>
+
 ### ROS - Python: Aplicación de movimiento en el espacio de la tarea
 
 Para el desarrollo del movimiento aplicado del manipulador en el espacio de la tarea se utilizó el entorno de Python, debido a la facilidad en la detección de las teclas "W", "A", "S" y "D". El script hecho es similar en algunas herramientas al desarrollado en la Practica 2, como lo es el uso de THERMIOS para la detección de teclas.
@@ -303,8 +308,7 @@ def give_Traj(initia_pos, axe_movement, q1, MLD, MLA, n_points):
    
     return Traj, n_points, new_position
 ```
-## Análisis y resultados
-Se obtuvo un código que permitiera realizar la rutina haciendo uso de los conocimientos obtenidos en cinematica inversa, demostrando asi otra forma de realizar el movimiento de est ipo de robots, pero con el detalle que se maneja un procedimiento discreto el cual hacer tener una trayectoria pas pausada y con posibles afectaciones por la inercia y el desgaste de los robots. Tal y como se evidencia en la siguiente seccion de vieos se muestra la rutina con dichas afectaciones en forma de oscilaciones en las articulaciones.
+
 
 ## Video en Youtube
 [Robótica: Cinemática Inversa - Phantom X - ROS](https://youtu.be/5wIkKf9X7k8 "Robótica: Cinemática Inversa - Phantom X - ROS")
