@@ -116,15 +116,93 @@ Como primer análisis es necesario encontrar una forma en el que se realice un t
 
 ### ROS - Python: Aplicación de movimiento en el espacio de la tarea
 
-Para el desarrollo del movimiento aplicado del manipulador en el espacio de la tarea se utilizó el entorno de Python para
+Para el desarrollo del movimiento aplicado del manipulador en el espacio de la tarea se utilizó el entorno de Python, debido a la facilidad en la detección de las teclas "W", "A", "S" y "D". El script hecho es similar en algunas herramientas al desarrollado en la Practica 2, como lo es el uso de THERMIOS para la detección de teclas.
+
+```Python
+TERMIOS = termios
+def getkey():
+    fd = sys.stdin.fileno()
+    old = termios.tcgetattr(fd)
+    new = termios.tcgetattr(fd)
+    new[3] = new[3] & ~TERMIOS.ICANON & ~TERMIOS.ECHO
+    new[6][TERMIOS.VMIN] = 1
+    new[6][TERMIOS.VTIME] = 0
+    termios.tcsetattr(fd, TERMIOS.TCSANOW, new)
+    c = None
+    try:
+        c = os.read(fd, 1)
+    finally:
+        termios.tcsetattr(fd, TERMIOS.TCSAFLUSH, old)
+    return c
+```
+
+Ahora bien, este script usa la misma función para obtener la cinemática inversa del robot, siempre da una configuración de codo hacia arriba. Además, usamos el tema Joint_State para obtener la posición actual del brazo.
 
 ```Python
 def inv_kci(T):
-.
-.
-.
-return qinv
+    l = np.array([14.5, 10.7, 10.7, 9])
+    Tw = T-(l[3]*T[0:4,2]).reshape(4,1)
+    q1 = np.arctan2(Tw[1,3],Tw[0,3])
+    # Solucion 2R
+    h = Tw[2,3] - l[0]
+    r = np.sqrt(Tw[0,3]**2 + Tw[1,3]**2)
+    # Codo abajo
+    the3 = np.arccos((r**2+h**2-l[1]**2-l[2]**2)/(2*l[1]*l[2]))
+    the2 = np.arctan2(h,r) - np.arctan2(l[2]*np.sin(the3),l[1]+l[2]*np.cos(the3))
+    q2d = -(np.pi/2-the2)
+    q3d = the3
+
+    # Codo arriba
+    the2 = np.arctan2(h,r) + np.arctan2(l[2]*np.sin(the3),l[1]+l[2]*np.cos(the3))
+    q2u = -(np.pi/2-the2)
+    q3u = -the3
+
+    # Solucion q4
+    Rp = (rotz(q1).T).dot(T[0:3,0:3])
+    pitch = np.arctan2(Rp[2,0],Rp[0,0])
+    q4d = pitch - q2d - q3d
+    q4u = pitch - q2u - q3u
+    if q4u > (7/6)*np.pi:
+        q4u = q4u-2*np.pi
+    qinv = np.empty((1,4))
+    qinv[:] =np.NaN
+    qinv[0,:] = np.array([q1*180/3.1416,q2u*180/3.1416,q3u*180/3.1416, q4u*180/3.1416])
+    return qinv
 ```
+
+
+```Python
+def give_Traj(initia_pos, axe_movement, q1, MLD, MLA, n_points):
+    print(initia_pos)
+    initial_pos_matrix = SE3(initia_pos[0],initia_pos[1], initia_pos[2])*SE3.Rz(initia_pos[3], unit='deg')*SE3.Ry(initia_pos[4] ,unit='deg')
+    if axe_movement == 1:
+        future_pos = SE3(initia_pos[0]+ MLD,initia_pos[1], initia_pos[2])*SE3.Rz(initia_pos[3], unit='deg')*SE3.Ry(initia_pos[4], unit='deg')
+        new_position = initia_pos
+        new_position[0] = initia_pos[0]+ MLD
+    elif axe_movement == 2:
+        future_pos = SE3(initia_pos[0],initia_pos[1]+ MLD, initia_pos[2])*SE3.Rz(initia_pos[3], unit='deg')*SE3.Ry(initia_pos[4], unit='deg')
+        new_position = initia_pos
+        new_position[1] = initia_pos[1]+ MLD
+    elif axe_movement == 3:
+        future_pos = SE3(initia_pos[0],initia_pos[1], initia_pos[2]+MLD)*SE3.Rz(initia_pos[3], unit='deg')*SE3.Ry(initia_pos[4], unit='deg')
+        new_position = initia_pos
+        new_position[2] = initia_pos[2]+ MLD
+    elif axe_movement == 4:
+        future_pos = SE3(initia_pos[0],initia_pos[1], initia_pos[2])*SE3.Rz(initia_pos[3], unit='deg')*SE3.Ry(initia_pos[4]+MLA ,unit='deg')
+        new_position = initia_pos
+        new_position[4] = initia_pos[4]+ MLA
+    print('Posicion Final')
+    print(new_position)
+    Ts = rtb.tools.trajectory.ctraj(initial_pos_matrix, future_pos, n_points)
+    #print(initial_pos_matrix)
+    #print(future_pos)
+    Traj = np.zeros((n_points,4))
+    for i in range(0,n_points):
+        Traj[i,:] = inv_kci(Ts[i].A)
+   
+    return Traj, n_points, new_position
+```
+
 
 ## Video en Youtube
 [Robótica: Cinemática Inversa - Phantom X - ROS](https://youtu.be/GdL3EysdHBM "Robótica: Cinemática Inversa - Phantom X - ROS")
