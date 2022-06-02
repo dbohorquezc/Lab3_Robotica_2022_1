@@ -205,7 +205,7 @@ def give_Traj(initia_pos, axe_movement, q1, MLD, MLA, n_points):
 
 
 ## Video en Youtube
-[Robótica: Cinemática Inversa - Phantom X - ROS](https://youtu.be/GdL3EysdHBM "Robótica: Cinemática Inversa - Phantom X - ROS")
+[Robótica: Cinemática Inversa - Phantom X - ROS](https://youtu.be/5wIkKf9X7k8 "Robótica: Cinemática Inversa - Phantom X - ROS")
 
 ## Conclusiones 
 
