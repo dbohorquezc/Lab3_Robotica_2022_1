@@ -98,7 +98,7 @@ $$
 
 Donde $\theta_a$ corresponde al angulo del vector "$a$" respecto al eje $Z_0$.
 
-### ROS - Aplicación de Pick and place
+### ROS - Matlab: Aplicación de Pick and place
 Para esta parte del laboratorio se hizo uso de la conexión de Matlab con ROS y su capacidad de permitir acceder y llamar los servicios que presente con respecto a una aplicación determinada por medio de código dentro del software. Es necesario mencionar que se tiene que relaizar un proceso previo el cual antecede al trabajo dentro Matlab, tal y como se menciono en los anteriores laboratorios se dan permisos de administrador al puerto donde se inserta la FTDI, se inicia el nodo maestro y se utiliza el launch que permite mover los motores. Se sigue el mismo proceso expresado en el Lab 1 donde se crea un nodo de MAtlab con el nodo maestro, y un cliente que permita ingresar a los servicios del Dynamixel Command por medio de un mensaje que indicará el movimiento de los motores a partir del siguiente código:
 
 ```
@@ -113,6 +113,9 @@ motorCommandMsg= rosmessage(motorSvcClient);
 
 ```
 Como primer análisis es necesario encontrar una forma en el que se realice un tipo de interpolación entre dos puntos que se conozca la rotación y traslación del efector final tal y como lo pide la cinemática inversa. Para esto se investigó una función del Toolbox de Peter Corke que permita realizar este proceso y tener una trayectoria más fluida y no solo dos puntos en el espacio, "ctraj" es la encargada de realizar este proceso, tiene como parámetros 
+
+### ROS - Python: Aplicación de movimiento en el espacio de la tarea
+
 
 
 ### Videos
