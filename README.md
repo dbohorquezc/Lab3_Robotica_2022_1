@@ -308,7 +308,7 @@ def give_Traj(initia_pos, axe_movement, q1, MLD, MLA, n_points):
    
     return Traj, n_points, new_position
 ```
-
+Posterior a esto solo es necesario agregar una cantidad positiva o negativa de MLD o MLA dependiendo si se pulsó la tecla ‘A’ o ‘D’,  y realizar el movimiento, para ello se creó la función move(), que recibe el número de iteraciones que se realizaron en la función del toolbox Ctraj() e itera por medio de un for para lograr el movimiento secuencial del robot.
 
 ## Video en Youtube
 [Robótica: Cinemática Inversa - Phantom X - ROS](https://youtu.be/5wIkKf9X7k8 "Robótica: Cinemática Inversa - Phantom X - ROS")
