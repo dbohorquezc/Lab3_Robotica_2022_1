@@ -289,7 +289,8 @@ def give_Traj(initia_pos, axe_movement, q1, MLD, MLA, n_points):
    
     return Traj, n_points, new_position
 ```
-
+## Análisis y resultados
+Se obtuvo un código que permitiera realizar la rutina haciendo uso de los conocimientos obtenidos en cinematica inversa, demostrando asi otra forma de realizar el movimiento de est ipo de robots, pero con el detalle que se maneja un procedimiento discreto el cual hacer tener una trayectoria pas pausada y con posibles afectaciones por la inercia y el desgaste de los robots. Tal y como se evidencia en la siguiente seccion de vieos se muestra la rutina con dichas afectaciones en forma de oscilaciones en las articulaciones.
 
 ## Video en Youtube
 
