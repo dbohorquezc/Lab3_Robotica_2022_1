@@ -116,6 +116,7 @@ Como primer análisis es necesario encontrar una forma en el que se realice un t
   <img align="center"; width="500"  src="Fig/ModeloTeach.png">
 </p>
 Para la obtención de la información del tipo de rotación  que presenta el marco de referencia de la herramienta con respecto a la base, se analiza la magnitud que debe tener dicha rotación de manera empírica y observación de los diferentes marcos, en algunos casos solo se realiza una modificación de la traslación, de esta manera se generan las suguientes matrices de transformacion homogenea.
+
 ```
 %Matriz de Home
 MTHinit=[1 0 0 0;0 1 0 0;0 0 1 44.9;0 0 0 1];
@@ -125,7 +126,7 @@ MTHinter1a=[0.7071 0 0.7071 14.483;0 1 0 0;-0.7071 0 0.7071 40.466;0 0 0 1];
 MTHinter=[-1 0 0 15;0 1 0 0;0 0 -1 10;0 0 0 1];
 %MTH de 8 cm encima del poste
 MTHinter2=[-1 0 0 15;0 1 0 0;0 0 -1 8;0 0 0 1];
-%MTH de la rotación a la izquierda del efector y posicion de 10 cm encima del primer cilindro
+%MTH de la rotación a la izquierda del efector y posición de 10 cm encima del primer cilindro
 MTHrotz1=trotz(pi/2)*MTHinter;MTHrotz1(1,4)=0;MTHrotz1(2,4)=15;
 %MTH del acercamiento al primer cilindro
 MTHFinal1=MTHrotz1;MTHFinal1(3,4)=4;
@@ -134,6 +135,8 @@ MTHrotz2=trotz(-pi/2)*MTHinter;MTHrotz2(1,4)=0;MTHrotz2(2,4)=-15;
 %MTH del acercamiento al segunda cilindro
 MTHFinal2=MTHrotz2;MTHFinal2(3,4)=4;
 ```
+Al tener estas matrices se puede hacer una rutina que permita ubicar los dos cilindros en el poste requerido, para evitar que se tenga una gran cantidad de lineas de codigo, se realizó una función que permitiera realizar la interpolación, la cinemática inversa y el llamado del servicio para enviar los ángulos requeridos en cada articulación
+
 ### Videos
 ## Conclusiones 
 
