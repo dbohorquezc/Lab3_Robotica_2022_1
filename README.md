@@ -275,7 +275,7 @@ def inv_kci(T):
     qinv[0,:] = np.array([q1*180/3.1416,q2u*180/3.1416,q3u*180/3.1416, q4u*180/3.1416])
     return qinv
 ```
-Se propone una función que permita definir trayectoria.
+Se propone una función que permita definir trayectoria. Esta recibe como entradas el punto actual, y dependiendo del eje de movimiento y la tecla pulsada, va a agregar o disminuir la cantidad MLD en [cm] para los desplazamientos; y la cantidad MLA en grados, para la rotación en y respecto a q1. Además de esto, se agrega como ultimo parámetro la cantidad de interpolaciones que se quiere que realice la función Ctaj() del Toolbox de Peter Corke.
 
 ```Python
 def give_Traj(initia_pos, axe_movement, q1, MLD, MLA, n_points):
@@ -311,9 +311,15 @@ def give_Traj(initia_pos, axe_movement, q1, MLD, MLA, n_points):
 Posterior a esto solo es necesario agregar una cantidad positiva o negativa de MLD o MLA dependiendo si se pulsó la tecla ‘A’ o ‘D’,  y realizar el movimiento, para ello se creó la función move(), que recibe el número de iteraciones que se realizaron en la función del toolbox Ctraj() e itera por medio de un for para lograr el movimiento secuencial del robot.
 
 ## Video en Youtube
+
+En el siguiente video se muestra de forma condensada lo realizado en la práctica. Primero se muestra el control por teclado y posteriormente la función de *Pick and place*.
+ Cabe aclarar que el robot Phantom x número 2 dado en la práctica, poseía fallos en el mecanismo del *gripper*, ya que un eslabón estaba deformado generando fricción y movimientos no esperados; es por esto que al final de la prueba de  *Pick and place* no se puede insertar el aro en la base, ya que generó fricciones indeseadas que al abrir el *gripper* no permitieron volver a su estado abierto y soltar la pieza.
+
+
 [Robótica: Cinemática Inversa - Phantom X - ROS](https://youtu.be/5wIkKf9X7k8 "Robótica: Cinemática Inversa - Phantom X - ROS")
 
 ## Conclusiones 
 
 * Como se muestra en el video la precisión del robot se puede ver afectada por la vida util de los componentes o por el mal uso como los golpes los cuales pueden afectar la integridad fisica del dispositivo llevando así a perturbaciones en la trayectado evidenciadas principalmente en las oscilaciones. 
 * El funcionamiento en conjunto de la función "ctraj" y la cinemática inversa en algunos casos presentaba soluciones que no era adecuadas o posibles para los motores, por ende fue necesario ingresar puntos intermedios manuales que indicaran un inicio de por donde se desea que siga la trayectoria, tal y como lo representa la MTH "MTHinter1a".
+* Se pudo realizar satisfactoriamente la práctica, aprendiendo del proceso de interpolar rutas para generar trayectorias y hallar la cinemática inversa para cada punto, un futuro análisis para la mejorar el desempeño del robot consta en abrir un camino hacia el control de movimiento, y el análisis de fuerzas que intervienen en las articulaciones del robot para que realice la tarea efectivamente.
