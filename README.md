@@ -110,14 +110,32 @@ rosinit;
 %%
 motorSvcClient = rossvcclient('/dynamixel_workbench/dynamixel_command');
 motorCommandMsg= rosmessage(motorSvcClient);
-
 ```
 Como primer análisis es necesario encontrar una forma en el que se realice un tipo de interpolación entre dos puntos que se conozca la rotación y traslación del efector final tal y como lo pide la cinemática inversa. Para esto se investigó una función del Toolbox de Peter Corke que permita realizar este proceso y tener una trayectoria más fluida y no solo dos puntos en el espacio, "ctraj" es la encargada de realizar este proceso, tiene como parámetros el ingreso de una matriz de transformación homogenea inicial, una de objetivo y por ultimo el numero de puntos que se quieren en la trayectoria, entre mas se tengan se consume más tiempo de procesamiento. Ahora el siguiente problema es la obtención de dichas matrices, para esto se hizo uso del modelo utilizado en el Lab2 donde se puede ver de manera gráfica e interactiva la posicion dl robot y el marco de referencia del eslabón con respecto a la base.
 <p align="center">
-  <img align="center"; width="150"  src="Fig/Diagram.png">
+  <img align="center"; width="500"  src="Fig/ModeloTeach.png">
 </p>
-
+Para la obtención de la información del tipo de rotación  que presenta el marco de referencia de la herramienta con respecto a la base, se analiza la magnitud que debe tener dicha rotación de manera empírica y observación de los diferentes marcos, en algunos casos solo se realiza una modificación de la traslación, de esta manera se generan las suguientes matrices de transformacion homogenea.
+```
+%Matriz de Home
+MTHinit=[1 0 0 0;0 1 0 0;0 0 1 44.9;0 0 0 1];
+%Matriz intermedia entre el punto encima del poste y el Home
+MTHinter1a=[0.7071 0 0.7071 14.483;0 1 0 0;-0.7071 0 0.7071 40.466;0 0 0 1];
+%Matriz que representa la poscición a 10 cm encima del poste
+MTHinter=[-1 0 0 15;0 1 0 0;0 0 -1 10;0 0 0 1];
+%MTH de 8 cm encima del poste
+MTHinter2=[-1 0 0 15;0 1 0 0;0 0 -1 8;0 0 0 1];
+%MTH de la rotación a la izquierda del efector y posicion de 10 cm encima del primer cilindro
+MTHrotz1=trotz(pi/2)*MTHinter;MTHrotz1(1,4)=0;MTHrotz1(2,4)=15;
+%MTH del acercamiento al primer cilindro
+MTHFinal1=MTHrotz1;MTHFinal1(3,4)=4;
+%MTH de la rotación a la derecha del efector y posición de 10 cm encima del segunda cilindro
+MTHrotz2=trotz(-pi/2)*MTHinter;MTHrotz2(1,4)=0;MTHrotz2(2,4)=-15;
+%MTH del acercamiento al segunda cilindro
+MTHFinal2=MTHrotz2;MTHFinal2(3,4)=4;
+```
 ### Videos
 ## Conclusiones 
 
-* Como se muestra en el video la precisión del robot se puede ver afectada por la vida util de los componentes o por el mal uso como los golpes los cuales pueden afectar la integridad fisica del dispositivo llevando así a perturbaciones en la trayectado evidenciadas principalmente en las oscilaciones. 
+* Como se muestra en el video la precisión del robot se puede ver afectada por la vida util de los componentes o por el mal uso como los golpes los cuales pueden afectar la integridad fisica del dispositivo llevando así a perturbaciones en la trayectoria evidenciadas principalmente en las oscilaciones. 
+* El funcionamiento en conjunto de la función "ctraj" y la cinemática inversa en algunos casos presentaba soluciones que no era adecuadas o posibles para los motores, por ende fue necesario ingresar puntos intermedios manuales que indicaran un inicio de por donde se desea que siga la trayectoria, tal y como lo representa la MTH "MTHinter1a".
