@@ -116,6 +116,8 @@ Como primer análisis es necesario encontrar una forma en el que se realice un t
 
 ### ROS - Python: Aplicación de movimiento en el espacio de la tarea
 
+Para el desarrollo del movimiento aplicado del manipulador en el espacio de la tarea se utilizó el entorno de Python para
+
 ```Python
 def inv_kci(T):
 .
