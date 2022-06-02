@@ -115,7 +115,28 @@ motorCommandMsg= rosmessage(motorSvcClient);
 Como primer análisis es necesario encontrar una forma en el que se realice un tipo de interpolación entre dos puntos que se conozca la rotación y traslación del efector final tal y como lo pide la cinemática inversa. Para esto se investigó una función del Toolbox de Peter Corke que permita realizar este proceso y tener una trayectoria más fluida y no solo dos puntos en el espacio, "ctraj" es la encargada de realizar este proceso, tiene como parámetros 
 
 
-Al tener estas matrices se puede hacer una rutina que permita ubicar los dos cilindros en el poste requerido, para evitar que se tenga una gran cantidad de lineas de codigo, se realizó una función que permitiera realizar la interpolación, la cinemática inversa y el llamado del servicio para enviar los ángulos requeridos en cada articulación:
+<p align="center">
+  <img align="center"; width="500"  src="Fig/ModeloTeach.png">
+</p>
+Para la obtención de la información del tipo de rotación  que presenta el marco de referencia de la herramienta con respecto a la base, se analiza la magnitud que debe tener dicha rotación de manera empírica y observación de los diferentes marcos, en algunos casos solo se realiza una modificación de la traslación, de esta manera se generan las suguientes matrices de transformacion homogenea.
+```
+%Matriz de Home
+MTHinit=[1 0 0 0;0 1 0 0;0 0 1 44.9;0 0 0 1];
+%Matriz intermedia entre el punto encima del poste y el Home
+MTHinter1a=[0.7071 0 0.7071 14.483;0 1 0 0;-0.7071 0 0.7071 40.466;0 0 0 1];
+%Matriz que representa la poscición a 10 cm encima del poste
+MTHinter=[-1 0 0 15;0 1 0 0;0 0 -1 10;0 0 0 1];
+%MTH de 8 cm encima del poste
+MTHinter2=[-1 0 0 15;0 1 0 0;0 0 -1 8;0 0 0 1];
+%MTH de la rotación a la izquierda del efector y posición de 10 cm encima del primer cilindro
+MTHrotz1=trotz(pi/2)*MTHinter;MTHrotz1(1,4)=0;MTHrotz1(2,4)=15;
+%MTH del acercamiento al primer cilindro
+MTHFinal1=MTHrotz1;MTHFinal1(3,4)=4;
+%MTH de la rotación a la derecha del efector y posición de 10 cm encima del segunda cilindro
+MTHrotz2=trotz(-pi/2)*MTHinter;MTHrotz2(1,4)=0;MTHrotz2(2,4)=-15;
+%MTH del acercamiento al segunda cilindro
+MTHFinal2=MTHrotz2;MTHFinal2(3,4)=4;
+```
 ```
 function []= Move(MTH1,MTH2,n,motorSvcClient,motorCommandMsg)
 
