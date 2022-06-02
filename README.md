@@ -137,9 +137,67 @@ MTHFinal2=MTHrotz2;MTHFinal2(3,4)=4;
 ```
 Al tener estas matrices se puede hacer una rutina que permita ubicar los dos cilindros en el poste requerido, para evitar que se tenga una gran cantidad de lineas de codigo, se realizó una función que permitiera realizar la interpolación, la cinemática inversa y el llamado del servicio para enviar los ángulos requeridos en cada articulación:
 
+```
+function []= Move(MTH1,MTH2,n,motorSvcClient,motorCommandMsg)
+TCP1=ctraj(MTH1,MTH2,n);
 
+for i=1:length(TCP1)
+    q_rad=invKin(TCP1(:,:,i));
+    q_deg=q_rad(1,:)*(180/pi)
+    for j=1:length(q_deg)
+       
+        motorCommandMsg.AddrName="Goal_Position";
+        motorCommandMsg.Id=j;
+        round(mapfun(q_deg(j),-150,150,0,1023))
+        motorCommandMsg.Value=round(mapfun(q_deg(j),-150,150,0,1023));%bits
+        call(motorSvcClient,motorCommandMsg);
+        pause(0.1);
+    end
+end
+end
+```
+Se evidencia que los parametros que ingresan con MTH de inicio y fin, el numeros de puntos, el cliente y el mensaje, como se menciono la interpolacion se ejecuta y se obtiene un arreglo en 3 dimendiones donde se guardan todas las MTH's de los puntos hallados permitiendo asi crear una iteracion que finalice cuando dichos puntos hallan sido evaluados con el fin de obtner los diferentes valores articulares y por último enviarlos  a cada uno de los motores. Como se hizo en lab 2 es necesario utilizar un mapeo para el envio de informacion a los motores, esto por medio de la función Mapfun la cual recibe los ángulo en radianes y otorga su valor respectivo en bits, con esto realizado lo que queda es realizar la rutina.
+```
+motorCommandMsg.AddrName="Goal_Position";
+motorCommandMsg.Id=5;
+motorCommandMsg.Value=round(mapfun(0,-150,150,0,1023));%bits
+call(motorSvcClient,motorCommandMsg);
+
+
+Move(MTHinit,MTHinter1a,10,motorSvcClient,motorCommandMsg);
+Move(MTHinter1a,MTHinter,10,motorSvcClient,motorCommandMsg);
+Move(MTHinter,MTHrotz1,10,motorSvcClient,motorCommandMsg);
+Move(MTHrotz1,MTHFinal1,15,motorSvcClient,motorCommandMsg);
+motorCommandMsg.AddrName="Goal_Position";
+motorCommandMsg.Id=5;
+motorCommandMsg.Value=round(mapfun(50,-150,150,0,1023));%bits
+call(motorSvcClient,motorCommandMsg);
+Move(MTHFinal1,MTHrotz1,10,motorSvcClient,motorCommandMsg);
+Move(MTHrotz1,MTHinter,10,motorSvcClient,motorCommandMsg);
+Move(MTHinter,MTHinter2,15,motorSvcClient,motorCommandMsg);
+motorCommandMsg.AddrName="Goal_Position";
+motorCommandMsg.Id=5;
+motorCommandMsg.Value=round(mapfun(0,-150,150,0,1023));%bits
+call(motorSvcClient,motorCommandMsg);
+Move(MTHinter2,MTHinter,10,motorSvcClient,motorCommandMsg);
+Move(MTHinter,MTHrotz2,10,motorSvcClient,motorCommandMsg);
+Move(MTHrotz2,MTHFinal2,15,motorSvcClient,motorCommandMsg);
+motorCommandMsg.AddrName="Goal_Position";
+motorCommandMsg.Id=5;
+motorCommandMsg.Value=round(mapfun(50,-150,150,0,1023));%bits
+call(motorSvcClient,motorCommandMsg);
+Move(MTHFinal2,MTHrotz2,10,motorSvcClient,motorCommandMsg);
+Move(MTHrotz2,MTHinter,10,motorSvcClient,motorCommandMsg);
+Move(MTHinter,MTHinter2,15,motorSvcClient,motorCommandMsg);
+motorCommandMsg.AddrName="Goal_Position";
+motorCommandMsg.Id=5;
+motorCommandMsg.Value=round(mapfun(0,-150,150,0,1023));%bits
+call(motorSvcClient,motorCommandMsg);
+Move(MTHinter2,MTHinter,10,motorSvcClient,motorCommandMsg);
+```
+Cada uno de los llamados de la función Move indican un movimiento iniciando desde home, y se puede evidenciar que en los puntos donde se ubica el cilindro se agrega un llamdo del servicio del motor de la pinza para ejecutar el agarre y como buen practica se agregan mas puntos en el movimiento previo a esto para obtener una aproximación más precisa
 ### Videos
 ## Conclusiones 
 
-* Como se muestra en el video la precisión del robot se puede ver afectada por la vida util de los componentes o por el mal uso como los golpes los cuales pueden afectar la integridad fisica del dispositivo llevando así a perturbaciones en la trayectoria evidenciadas principalmente en las oscilaciones. 
+* Como se muestra en el video la precisión del robot se puede ver afectada por la vida util de los componentes o por el mal uso como los golpes los cuales pueden afectar la integridad física del dispositivo llevando así a perturbaciones en la trayectoria evidenciadas principalmente en las oscilaciones. 
 * El funcionamiento en conjunto de la función "ctraj" y la cinemática inversa en algunos casos presentaba soluciones que no era adecuadas o posibles para los motores, por ende fue necesario ingresar puntos intermedios manuales que indicaran un inicio de por donde se desea que siga la trayectoria, tal y como lo representa la MTH "MTHinter1a".
