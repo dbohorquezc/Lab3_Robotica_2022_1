@@ -195,7 +195,7 @@ motorCommandMsg.Value=round(mapfun(0,-150,150,0,1023));%bits
 call(motorSvcClient,motorCommandMsg);
 Move(MTHinter2,MTHinter,10,motorSvcClient,motorCommandMsg);
 ```
-Cada uno de los llamados de la función Move indican un movimiento iniciando desde home, y se puede evidenciar que en los puntos donde se ubica el cilindro se agrega un llamdo del servicio del motor de la pinza para ejecutar el agarre y como buen practica se agregan mas puntos en el movimiento previo a esto para obtener una aproximación más precisa
+Cada uno de los llamados de la función Move indican un movimiento iniciando desde home, y se puede evidenciar que en los puntos donde se ubica el cilindro se agrega un llamado del servicio del motor de la pinza para ejecutar el agarre y como buen practica se agregan más puntos en el movimiento previo a esto para obtener una aproximación más precisa
 ### Videos
 ## Conclusiones 
 
