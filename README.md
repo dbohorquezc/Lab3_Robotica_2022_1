@@ -135,7 +135,8 @@ MTHrotz2=trotz(-pi/2)*MTHinter;MTHrotz2(1,4)=0;MTHrotz2(2,4)=-15;
 %MTH del acercamiento al segunda cilindro
 MTHFinal2=MTHrotz2;MTHFinal2(3,4)=4;
 ```
-Al tener estas matrices se puede hacer una rutina que permita ubicar los dos cilindros en el poste requerido, para evitar que se tenga una gran cantidad de lineas de codigo, se realizó una función que permitiera realizar la interpolación, la cinemática inversa y el llamado del servicio para enviar los ángulos requeridos en cada articulación
+Al tener estas matrices se puede hacer una rutina que permita ubicar los dos cilindros en el poste requerido, para evitar que se tenga una gran cantidad de lineas de codigo, se realizó una función que permitiera realizar la interpolación, la cinemática inversa y el llamado del servicio para enviar los ángulos requeridos en cada articulación:
+
 
 ### Videos
 ## Conclusiones 
