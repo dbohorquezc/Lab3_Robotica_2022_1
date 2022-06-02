@@ -53,6 +53,8 @@ $$
 Donde los valores de $a_X$, $a_Y$ and $a_Z$ corresponden a los componentes cartesianos del vector "$a$". A partir de esto es posible determinar los componentes de la matriz de rotación de nuestro TCP. De esta forma es posible simplificar este problema de cinematica inversa al de un mecanismo 2R, donde se proponen dos soluciones: Codo arriba y Codo abajo:
 
 
+
+
 $$
 \begin{gather*}
     r = \sqrt{X_W^2+Y_W^2} \ \ \ \ \ \ h = z_w-l_1\\
@@ -71,6 +73,10 @@ Se utilizan las siguientes ecuaciones para definir las soluciones de Codo arriba
 
 #### CODO ARRIBA:
 
+<p align="center">
+  <img src="Fig/Codoarriba.jpeg"/>
+</p>
+
 $$
 \begin{gather*} 
   q_2 = \frac{\pi}{2}-\beta-\alpha-\gamma \\
@@ -80,6 +86,10 @@ $$
 
 #### CODO ABAJO:
 
+<p align="center">
+  <img src="Fig/Codoabajo.jpeg"/>
+</p>
+
 $$
 \begin{gather*} 
   q_2 = \frac{\pi}{2}-(\gamma-\alpha+\beta)\\
@@ -88,6 +98,10 @@ $$
 $$
 
 Una vez definidos los ángulos se vuelve a acoplar la muñeca y se define su angulo como:
+
+<p align="center">
+  <img src="Fig/Inv.jpeg"/>
+</p>
 
 $$
 \begin{gather*}
@@ -256,7 +270,7 @@ def inv_kci(T):
     qinv[0,:] = np.array([q1*180/3.1416,q2u*180/3.1416,q3u*180/3.1416, q4u*180/3.1416])
     return qinv
 ```
-Se propone una función que permita definir trayectoria. Esta recibe como entradas el punto actual, y dependiendo del eje de movimiento y la tecla pulsada, va a agregar o disminuir la cantidad MLD en [cm] para los desplazamientos; y la cantidad MLA en grados, para la rotación en y respecto a q1. Además de esto, se agrega como ultimo parámetro la cantidad de interpolaciones que se quiere que realice la función Ctaj() del Toolbox de Peter Corke.
+Se propone una función que permita definir trayectoria.
 
 ```Python
 def give_Traj(initia_pos, axe_movement, q1, MLD, MLA, n_points):
@@ -289,18 +303,12 @@ def give_Traj(initia_pos, axe_movement, q1, MLD, MLA, n_points):
    
     return Traj, n_points, new_position
 ```
-## Análisis y resultados
-Se obtuvo un código que permitiera realizar la rutina haciendo uso de los conocimientos obtenidos en cinematica inversa, demostrando asi otra forma de realizar el movimiento de est ipo de robots, pero con el detalle que se maneja un procedimiento discreto el cual hacer tener una trayectoria pas pausada y con posibles afectaciones por la inercia y el desgaste de los robots. Tal y como se evidencia en la siguiente seccion de vieos se muestra la rutina con dichas afectaciones en forma de oscilaciones en las articulaciones.
+
 
 ## Video en Youtube
-
-En el siguiente video se muestra de forma condensada lo realizado en la práctica. Primero se muestra el control por teclado y posteriormente la función de *Pick and place*.
- Cabe aclarar que el robot Phantom x número 2 dado en la práctica, poseía fallos en el mecanismo del *gripper*, ya que un eslabón estaba deformado generando fricción y movimientos no esperados; es por esto que al final de la prueba de  *Pick and place* no se puede insertar el aro en la base, ya que generó fricciones indeseadas que al abrir el *gripper* no permitieron volver a su estado abierto y soltar la pieza.
-
 [Robótica: Cinemática Inversa - Phantom X - ROS](https://youtu.be/5wIkKf9X7k8 "Robótica: Cinemática Inversa - Phantom X - ROS")
 
 ## Conclusiones 
 
 * Como se muestra en el video la precisión del robot se puede ver afectada por la vida util de los componentes o por el mal uso como los golpes los cuales pueden afectar la integridad fisica del dispositivo llevando así a perturbaciones en la trayectado evidenciadas principalmente en las oscilaciones. 
 * El funcionamiento en conjunto de la función "ctraj" y la cinemática inversa en algunos casos presentaba soluciones que no era adecuadas o posibles para los motores, por ende fue necesario ingresar puntos intermedios manuales que indicaran un inicio de por donde se desea que siga la trayectoria, tal y como lo representa la MTH "MTHinter1a".
-* Se pudo realizar satisfactoriamente la práctica, aprendiendo del proceso de interpolar rutas para generar trayectorias y hallar la cinemática inversa para cada punto, un futuro análisis para la mejorar el desempeño del robot consta en abrir un camino hacia el control de movimiento, y el análisis de fuerzas que intervienen en las articulaciones del robot para que realice la tarea efectivamente.
