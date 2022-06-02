@@ -15,7 +15,7 @@ Robótica</p1>
   <img align="center"; width="100"  src="Fig/Escudo_UN.png">
 </p>
 
-<p align="center"; style="font-size:50px; text-align:center; line-height : 30px; margin-top : 0; "> <br>13 de mayo de 2022</p>
+<p align="center"; style="font-size:50px; text-align:center; line-height : 30px; margin-top : 0; "> <br>1ero de Junio de 2022</p>
 
 ## Metodología
 
@@ -112,6 +112,7 @@ motorSvcClient = rossvcclient('/dynamixel_workbench/dynamixel_command');
 motorCommandMsg= rosmessage(motorSvcClient);
 
 ```
+
 Como primer análisis es necesario encontrar una forma en el que se realice un tipo de interpolación entre dos puntos que se conozca la rotación y traslación del efector final tal y como lo pide la cinemática inversa. Para esto se investigó una función del Toolbox de Peter Corke que permita realizar este proceso y tener una trayectoria más fluida y no solo dos puntos en el espacio, "ctraj" es la encargada de realizar este proceso, tiene como parámetros el ingreso de una matriz de transformación homogenea inicial, una de objetivo y por ultimo el numero de puntos que se quieren en la trayectoria, entre mas se tengan se consume más tiempo de procesamiento. Ahora el siguiente problema es la obtención de dichas matrices, para esto se hizo uso del modelo utilizado en el Lab2 donde se puede ver de manera gráfica e interactiva la posicion dl robot y el marco de referencia del eslabón con respecto a la base.
 <p align="center">
   <img align="center"; width="500"  src="Fig/ModeloTeach.png">
@@ -200,10 +201,6 @@ Move(MTHinter2,MTHinter,10,motorSvcClient,motorCommandMsg);
 ```
 Cada uno de los llamados de la función Move indican un movimiento iniciando desde home, y se puede evidenciar que en los puntos donde se ubica el cilindro se agrega un llamado del servicio del motor de la pinza para ejecutar el agarre y como buen practica se agregan más puntos en el movimiento previo a esto para obtener una aproximación más precis
 
-
-
-
-
 ### ROS - Python: Aplicación de movimiento en el espacio de la tarea
 
 Para el desarrollo del movimiento aplicado del manipulador en el espacio de la tarea se utilizó el entorno de Python, debido a la facilidad en la detección de las teclas "W", "A", "S" y "D". El script hecho es similar en algunas herramientas al desarrollado en la Practica 2, como lo es el uso de THERMIOS para la detección de teclas.
@@ -226,7 +223,7 @@ def getkey():
     return c
 ```
 
-Ahora bien, este script usa la misma función para obtener la cinemática inversa del robot, siempre da una configuración de codo hacia arriba. Además, usamos el tema Joint_State para obtener la posición actual del brazo.
+Ahora bien, este script tiene en cuenta la función de cinematica inversa propuesta inicialmente en el repositorio del laboratorio, donde se entrega la función "qinv" obteniendo los valores de posición de las articulaciones.
 
 ```Python
 def inv_kci(T):
@@ -259,7 +256,7 @@ def inv_kci(T):
     qinv[0,:] = np.array([q1*180/3.1416,q2u*180/3.1416,q3u*180/3.1416, q4u*180/3.1416])
     return qinv
 ```
-
+Se propone una función que permita definir trayectoria.
 
 ```Python
 def give_Traj(initia_pos, axe_movement, q1, MLD, MLA, n_points):
@@ -299,7 +296,4 @@ def give_Traj(initia_pos, axe_movement, q1, MLD, MLA, n_points):
 
 ## Conclusiones 
 
-* Como se muestra en el video la precisión del robot se puede ver afectada por la vida util de los componentes o por el mal uso como los golpes los cuales pueden afectar la integridad física del dispositivo llevando así a perturbaciones en la trayectoria evidenciadas principalmente en las oscilaciones. 
-* El funcionamiento en conjunto de la función "ctraj" y la cinemática inversa en algunos casos presentaba soluciones que no era adecuadas o posibles para los motores, por ende fue necesario ingresar puntos intermedios manuales que indicaran un inicio de por donde se desea que siga la trayectoria, tal y como lo representa la MTH "MTHinter1a".
-
-
+* Como se muestra en el video la precisión del robot se puede ver afectada por la vida util de los componentes o por el mal uso como los golpes los cuales pueden afectar la integridad fisica del dispositivo llevando así a perturbaciones en la trayectado evidenciadas principalmente en las oscilaciones. 
